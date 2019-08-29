@@ -61,6 +61,7 @@ class _UploadFileState extends State<UploadFile> {
               onPressed: () async {
                 setState(() {
                   downloadImagelink= 'file uploading...';
+
                 });
                 final String fileName = Random().nextInt(10000).toString() +'.$JPG';
                 final StorageReference firebaseStorageRef =
@@ -70,7 +71,7 @@ class _UploadFileState extends State<UploadFile> {
                 getImageLink(task);
               },
             ),
-            downloadImagelink == null ? Text('File link ') :  Text(downloadImagelink),
+            downloadImagelink == null ? Text('File link ') :  Text(downloadImagelink, style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),),
           ],
         ),
       ),// This trailing comma makes auto-formatting nicer for build methods.
