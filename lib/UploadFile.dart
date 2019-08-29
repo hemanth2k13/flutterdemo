@@ -26,7 +26,15 @@ class _UploadFileState extends State<UploadFile> {
       sampleImage = tempImage;
     });
   }
+  Future getImageLink(StorageUploadTask task) async {
 
+    StorageTaskSnapshot taskSnapshot = await task.onComplete;
+    String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    setState(() {
+      downloadImagelink= downloadUrl;
+    });
+
+  }
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -53,21 +61,16 @@ class _UploadFileState extends State<UploadFile> {
                 FirebaseStorage.instance.ref().child(fileName);
                 final StorageUploadTask task =
                 firebaseStorageRef.putFile(sampleImage);
-                StorageTaskSnapshot taskSnapshot = await task.onComplete;
-                String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-                downloadImagelink= await taskSnapshot.ref.getDownloadURL();
-                print('download url '+downloadUrl);
-                AlertDialog(
-                  title: Text(downloadUrl),
-                );
-//                uploadresult(task);
+                getImageLink(task);
               },
             ),
-            downloadImagelink == null ? Text('') :  Text('Download link '+downloadImagelink),
+            downloadImagelink == null ? Text('File link ') :  Text('Download link '+downloadImagelink),
           ],
         ),
       ),// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+
 
 }
