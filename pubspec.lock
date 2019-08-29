@@ -83,6 +83,13 @@ packages:
       url: "git://github.com/rinlv/flutter_webview_plugin"
     source: git
     version: "0.3.7"
+  fluttertoast:
+    dependency: "direct dev"
+    description:
+      name: fluttertoast
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.2"
   http:
     dependency: "direct dev"
     description:

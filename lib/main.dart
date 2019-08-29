@@ -5,12 +5,14 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutterdemo/UploadFile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() => runApp(MyApp());
 
-var url = "http://192.168.0.173/android.html";
+var url = "http://192.168.0.173/facebook.html";
 
 BuildContext _context;
+final flutterWebviewPlugin = new FlutterWebviewPlugin();
 
 final Set<JavascriptChannel> jsChannels = [
   JavascriptChannel(
@@ -18,6 +20,9 @@ final Set<JavascriptChannel> jsChannels = [
       onMessageReceived: (JavascriptMessage message) {
         print(message.message);
         initiateFacebookLogin();
+        /*Navigator
+            .of(_context)
+            .pushReplacement(new MaterialPageRoute(builder: (BuildContext context) => UploadFile()));*/
       }),
 ].toSet();
 
@@ -25,7 +30,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    _context = context;
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -51,7 +55,7 @@ class _WebViewContainerState1 extends State<WebViewContainer1> {
 
   _WebViewContainerState1(this._url);
 
-  final flutterWebviewPlugin = new FlutterWebviewPlugin();
+
   StreamSubscription<WebViewStateChanged> _onchanged;
 
   @override
@@ -62,9 +66,9 @@ class _WebViewContainerState1 extends State<WebViewContainer1> {
       if (mounted) {
         if (state.type == WebViewState.finishLoad) {
           // if the full website page loaded
-          print("loaded...");
+          print("loaded...");/*
           url = "javascript:onDocFetchComplete(200)";
-          flutterWebviewPlugin.evalJavascript(url);
+          flutterWebviewPlugin.evalJavascript(url);*/
         } else if (state.type == WebViewState.abortLoad) {
           // if there is a problem with loading the url
           print("there is a problem...");
@@ -84,6 +88,7 @@ class _WebViewContainerState1 extends State<WebViewContainer1> {
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     return WebviewScaffold(
       url: this._url,
       withJavascript: true,
@@ -111,7 +116,14 @@ void initiateFacebookLogin() async {
   final Future<AuthResult> user = FirebaseAuth.instance.signInWithCredential(credential);
   user.then((AuthResult result) {
     print("FacebookUserAuth ${result.user.displayName} : ${result.user.email} : ${result.user.phoneNumber}");
-    _showToast(_context, "${result.user.displayName} : ${result.user.email} : ${result.user.phoneNumber}");
+    String value = "Name: ${result.user.displayName} , Email: ${result.user.email}";
+    url = "javascript:onDocFetchComplete('$value')";
+    //flutterWebviewPlugin.evalJavascript(url);
+    _showToast(value);
+    Navigator
+        .of(_context)
+        .pushReplacement(new MaterialPageRoute(builder: (BuildContext context) => UploadFile()));
+    //_showToast(_context, "${result.user.displayName} : ${result.user.email} : ${result.user.phoneNumber}");
   });
   print(graphResponse.body);
   switch (facebookLoginResult.status) {
@@ -131,13 +143,14 @@ void alertDialog() {
 
 }
 
-void _showToast(BuildContext context, String data) {
-  final scaffold = Scaffold.of(context);
-  scaffold.showSnackBar(
-    SnackBar(
-      content: Text(data),
-      action: SnackBarAction(
-          label: 'OK', onPressed: scaffold.hideCurrentSnackBar),
-    ),
+void _showToast(String data) {
+  Fluttertoast.showToast(
+      msg: data,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIos: 2,
+      backgroundColor: Colors.blue,
+      textColor: Colors.white,
+      fontSize: 16.0
   );
 }
